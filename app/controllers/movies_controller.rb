@@ -1,6 +1,20 @@
 class MoviesController < ApplicationController
   before_action :force_index_redirect, only: [:index]
 
+  def search_tmdb
+    
+    @movie_name = params[:movie][:title]
+    if @movie_name == "Inception" 
+      @rating = "PG-13"
+      @release_date = "2010-07-08"
+      redirect_to new_movie_path( name:@movie_name,rate:@rating,date:@release_date)
+
+    else
+      redirect_to movies_path
+      flash[:notice] = " '#{@movie_name}' was not found in TMDb."
+    end
+  end
+
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -19,6 +33,9 @@ class MoviesController < ApplicationController
 
   def new
     # default: render 'new' template
+    @movie_title = params[:name]
+    @movie_rate = params[:rate] 
+    @movie_date = params[:date] || Date.today.strftime()
   end
 
   def create
@@ -66,10 +83,8 @@ class MoviesController < ApplicationController
   def sort_by
     params[:sort_by] || session[:sort_by] || 'id'
   end
-  private
-    # Making "internal" methods private is not required, but is a common practice.
-    # This helps make clear which methods respond to requests, and which ones do not.
-    def movie_params
-      params.require(:movie).permit(:title, :rating, :description, :release_date)
-    end
+
+  def movie_params
+    params.require(:movie).permit(:title, :rating, :description, :release_date)
+  end
 end
