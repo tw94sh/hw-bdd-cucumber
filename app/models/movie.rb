@@ -1,4 +1,6 @@
 class Movie < ActiveRecord::Base
+  has_many :reviews
+  has_many :movies, :through => :reviews
   def self.all_ratings
     ['G', 'PG', 'PG-13', 'R']
   end
